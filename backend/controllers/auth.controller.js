@@ -1,8 +1,10 @@
 import User  from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 
 export const signup = async(req,res) =>{
     try {
         const {fullName,username,password,confirmPassword, gender} = req.body;
+        console.log("usr",username)
         if(password !== confirmPassword){
             return res.status(400).json({error:"passwords don't match"})
         }
@@ -12,7 +14,10 @@ export const signup = async(req,res) =>{
             return res.status(400).json({error:"Username already exists"})
         }
 
+
         //Hash Password Here
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         //https://avatar-placeholder.iran.liara.run/
 
@@ -22,7 +27,7 @@ export const signup = async(req,res) =>{
         const newUser = new User({
             fullName,
             username,
-            password,
+            password: hashedPassword,
             gender,
             profilePic: gender === 'male' ? boyProfilePic : girlProfilePic
         })
@@ -30,7 +35,8 @@ export const signup = async(req,res) =>{
         await newUser.save();
 
         res.status(201).json({
-            _id: newUser.fullName,
+            _id:newUser._id,
+            fullName: newUser.fullName,
             username:newUser.username,
             profilePic:newUser.profilePic
         })
