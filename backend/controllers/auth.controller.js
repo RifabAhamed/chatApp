@@ -1,5 +1,6 @@
 import User  from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import generateTokenAndSetCookie from "../utils/generateToken.js";
 
 export const signup = async(req,res) =>{
     try {
@@ -11,7 +12,7 @@ export const signup = async(req,res) =>{
 
         const user = await User.findOne({username});
         if(user){
-            return res.status(400).json({error:"Username already exists"})
+            return res.status(400).json({error:"Usernamee already exists"})
         }
 
 
@@ -32,6 +33,9 @@ export const signup = async(req,res) =>{
             profilePic: gender === 'male' ? boyProfilePic : girlProfilePic
         })
 
+       if(newUser){
+        //Generate JWT Token
+         generateTokenAndSetCookie(newUser._id, res);
         await newUser.save();
 
         res.status(201).json({
@@ -40,6 +44,9 @@ export const signup = async(req,res) =>{
             username:newUser.username,
             profilePic:newUser.profilePic
         })
+       }else{
+        res.status(400).json({error:"Something went wrong"})
+       }
     }
     catch (error) {
         console.log("Error in signup controller", error.message);
