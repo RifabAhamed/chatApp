@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
+import userRoutes from "./routes/user.routes.js"
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import cookieParser from 'cookie-parser';
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 // Use auth routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes)
 
 // Optionally, you can enable a root route
 // app.get("/", (req, res) => {
